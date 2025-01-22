@@ -16,7 +16,9 @@ export default {
                 fivePoints: "fivePoints 60s linear infinite",
                 rotateFlash: "rotateFlash 6s ease-in-out infinite",
                 suiEasyOut: "suiEasyOut 1s linear 2s forwards",
-                circleEasyIn: "circleEasyIn 2s ease-in forwards",
+                circleEasyIn: "easyIn 2s ease-in forwards",
+                playEasyIn: "easyIn 2s ease-in-out forwards",
+                borderColor: "borderColor 5s linear infinite",
             },
             keyframes: {
                 fivePoints: {
@@ -87,14 +89,28 @@ export default {
                         opacity: "0",
                     }
                 },
-                circleEasyIn: {
+                easyIn: {
                     "0%": {
                         opacity: "0",
                     },
                     "100%": {
                         opacity: "1",
                     }
-                }
+                },
+                borderColor: {
+                    "0%, 100%": {
+                        borderColor: "#2dd4bf",
+                    },
+                    "25%": {
+                        borderColor: "#3b82f6",
+                    },
+                    "50%": {
+                        borderColor: "#ec4899",
+                    },
+                    "75%": {
+                        borderColor: "#f97316",
+                    }
+                },
             }
         },
     },

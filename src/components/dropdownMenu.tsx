@@ -9,7 +9,7 @@ export type MenuItemType = {
 
 export default function DropdownMenu({props, children}: {props: MenuItemType[], children: ReactNode}) {
     return (
-        <div className="relative group">
+        <div className="relative group z-10">
             {children}
             <div className="flex flex-col gap-3 items-center absolute w-full mt-3 text-[#A0A0A0] invisible opacity-0 group-hover:visible group-hover:opacity-100 duration-500">
                 {

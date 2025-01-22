@@ -3,7 +3,7 @@
 import {useMediaSize} from "@/hooks";
 import {useContext, useEffect, useState} from "react";
 import Image from "next/image";
-import {CustomConnectButton, DropdownMenu, MenuItemType} from "@/components";
+import {CustomConnectButton, DropdownMenu, MenuItemType, PlayArea} from "@/components";
 import {WalletContext} from "@/contexts";
 import {useDisconnectWallet, useSwitchAccount} from "@mysten/dapp-kit";
 import {WalletAccount} from "@mysten/wallet-standard";
@@ -81,6 +81,9 @@ export default function Home() {
                     </div>
                 </div>
             }
+            <div className="fixed top-0 left-0 w-full h-full animate-playEasyIn">
+                <PlayArea />
+            </div>
         </div>
     );
 }
