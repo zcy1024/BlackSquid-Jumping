@@ -36,7 +36,7 @@ export default function PlayArea() {
 
     return (
         <div className="flex flex-col justify-between items-center h-full p-28 opacity-60">
-            <div className="relative top-[6%] flex items-center gap-10 animate-[easyIn_12s_ease-in-out_forwards]">
+            <div className="relative top-[6%] flex items-center gap-10 animate-[easyIn_12s_ease-in-out_forwards] -skew-x-6">
                 <div
                     className={"relative h-[126px] w-[126px] bg-[#1A1A1A] rounded-full border-double border-2 animate-borderColor transition-all duration-1000 " + (playerIdx[0] === 0 ? "" : "bg-black")}>
                     <Player areaIndex={[0, 0]} playerIndex={playerIdx}/>
