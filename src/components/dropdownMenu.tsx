@@ -4,7 +4,7 @@ import {ReactNode} from "react";
 
 export type MenuItemType = {
     label: string,
-    handleClick: () => void
+    handleClick: () => Promise<void> | void
 }
 
 export default function DropdownMenu({props, children}: {props: MenuItemType[], children: ReactNode}) {

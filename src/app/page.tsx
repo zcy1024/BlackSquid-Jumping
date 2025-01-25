@@ -1,12 +1,13 @@
 'use client'
 
-import {useMediaSize} from "@/hooks";
-import {useContext, useEffect, useState} from "react";
+import {useBetterSignAndExecuteTransaction, useMediaSize} from "@/hooks";
+import {useContext, useEffect, useMemo, useState} from "react";
 import Image from "next/image";
-import {CustomConnectButton, DropdownMenu, MenuItemType, PlayArea} from "@/components";
-import {WalletContext} from "@/contexts";
+import {CustomConnectButton, DropdownMenu, Invest, MenuItemType, PlayArea, Tips} from "@/components";
+import {PoolContext, TipContext, WalletContext} from "@/contexts";
 import {useDisconnectWallet, useSwitchAccount} from "@mysten/dapp-kit";
 import {WalletAccount} from "@mysten/wallet-standard";
+import {investWithdrawTx} from "@/libs/contracts";
 
 export default function Home() {
     const [windowWidth, windowHeight] = useMediaSize();
@@ -54,8 +55,43 @@ export default function Home() {
         }));
     }, [walletContext, switchAccount, disconnect]);
 
+    const [tips, setTips] = useContext(TipContext);
+    const [tryToInvest, setTryToInvest] = useState<boolean>(false);
+    const {handleSignAndExecuteTransaction: handleWithdraw} = useBetterSignAndExecuteTransaction({
+        tx: investWithdrawTx,
+        waitForTx: true
+    });
+    const [poolInfo, updatePoolInfo] = useContext(PoolContext);
+    const investItems = useMemo(() => {
+        const ret: MenuItemType[] = [
+            {
+                label: "invest",
+                handleClick: () => setTryToInvest(true)
+            },
+            {
+                label: "withdraw",
+                handleClick: async () => {
+                    await handleWithdraw({})
+                        .beforeExecute(() => {
+                            setTips("Waiting...");
+                        })
+                        .onSuccess(async () => {
+                            await updatePoolInfo();
+                            setTips("");
+                        })
+                        .onError((err) => {
+                            console.log(err);
+                            setTips("");
+                        })
+                        .onExecute();
+                }
+            }
+        ]
+        return ret;
+    }, [handleWithdraw, setTips, updatePoolInfo]);
+
     return (
-        <div className="w-screen h-screen overflow-hidden">
+        <div className="w-screen h-screen overflow-hidden select-none">
             <div className="fixed w-full h-full -z-10">
                 <div className="flex justify-center items-center absolute w-full h-full animate-fivePoints">
                     <div className="w-[100vh] h-[100vh] rounded-full bg-blue-400 animate-circleEasyIn"></div>
@@ -63,9 +99,15 @@ export default function Home() {
             </div>
             <div className="flex justify-between items-center h-16 px-64 bg-[#222]">
                 <Image src="/logo.jpeg" alt="HOH" width={60} height={60} className="opacity-60" priority={true}/>
-                <DropdownMenu props={menuItems}>
-                    <CustomConnectButton/>
-                </DropdownMenu>
+                <div className="flex gap-10 items-center text-[#A0A0A0]">
+                    <div>Pool: {poolInfo.total / 1000000000}Sui</div>
+                    <DropdownMenu props={investItems}>
+                        Invest: {poolInfo.invested_amount / 1000000000}Sui
+                    </DropdownMenu>
+                    <DropdownMenu props={menuItems}>
+                        <CustomConnectButton/>
+                    </DropdownMenu>
+                </div>
             </div>
             <div className="flex flex-wrap justify-between">
                 {
@@ -84,6 +126,8 @@ export default function Home() {
             <div className="fixed top-0 left-0 w-full h-full animate-playEasyIn">
                 <PlayArea />
             </div>
+            <Tips tips={tips} />
+            {tryToInvest && <Invest closeInvestAction={setTryToInvest} />}
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import {Transaction} from "@mysten/sui/transactions";
 import {useSignAndExecuteTransaction} from "@mysten/dapp-kit";
-import {SuiSignAndExecuteTransactionOutput} from "@mysten/wallet-standard";
+import {SuiSignAndExecuteTransactionBlockOutput} from "@mysten/wallet-standard";
 import {useState} from "react";
 import {suiClient} from "@/configs/networkConfig";
 
@@ -13,22 +13,33 @@ export type BetterSignAndExecuteTransactionProps<TArgs extends unknown[] = unkno
 
 type TransactionChain = {
     beforeExecute: (callback: () => Promise<void> | void) => TransactionChain,
-    onSuccess: (callback: (result: SuiSignAndExecuteTransactionOutput) => Promise<void> | void) => TransactionChain,
+    onSuccess: (callback: (result: SuiSignAndExecuteTransactionBlockOutput | undefined) => Promise<void> | void) => TransactionChain,
     onError: (callback: (error: Error) => Promise<void> | void) => TransactionChain,
-    onSettled: (callback: (result: SuiSignAndExecuteTransactionOutput | undefined) => Promise<void> | void) => TransactionChain,
+    onSettled: (callback: (result: SuiSignAndExecuteTransactionBlockOutput | undefined) => Promise<void> | void) => TransactionChain,
     onExecute: () => Promise<void>
 }
 
 export function useBetterSignAndExecuteTransaction<TArgs extends unknown[] = unknown[]>(props: BetterSignAndExecuteTransactionProps<TArgs>) {
-    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction();
+    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction({
+        execute: async ({ bytes, signature }) => {
+            return await suiClient.executeTransactionBlock({
+                transactionBlock: bytes,
+                signature,
+                options: {
+                    showRawEffects: true,
+                    showEvents: true
+                }
+            })
+        }
+    });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleSignAndExecuteTransaction = (...args: TArgs) => {
         const tx = props.tx(...args);
         let beforeExecuteCallback: (() => Promise<void> | void) | undefined;
-        let successCallback: ((result: SuiSignAndExecuteTransactionOutput) => Promise<void> | void) | undefined;
+        let successCallback: ((result: SuiSignAndExecuteTransactionBlockOutput | undefined) => Promise<void> | void) | undefined;
         let errorCallback: ((error: Error) => Promise<void> | void) | undefined;
-        let settledCallback: ((result: SuiSignAndExecuteTransactionOutput | undefined) => Promise<void> | void) | undefined;
+        let settledCallback: ((result: SuiSignAndExecuteTransactionBlockOutput | undefined) => Promise<void> | void) | undefined;
         const chain: TransactionChain = {
             beforeExecute: (callback) => {
                 beforeExecuteCallback = callback;
