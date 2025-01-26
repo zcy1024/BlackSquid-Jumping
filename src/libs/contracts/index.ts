@@ -46,7 +46,16 @@ export const nextPositionTx = createBetterTxFactory<{
     row: number,
     nft: string
 }>((tx, networkVariables, params) => {
-    run().then(res => {
+    const data =
+`Each subsequent row represents a round of the game, and the numbers in each row represent the choices the player in turn makes during that round.
+0 1 2
+2 2 2 2 1 1
+0 0 2 1
+0 1 0
+1 1 1 1
+1 0 2 2 0
+2 0`;
+    run(data).then(res => {
         console.log(res);
         console.log(res.choices[0].message.content);
     });

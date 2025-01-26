@@ -27,7 +27,12 @@ type ResponseType = {
     }[]
 }
 
-export async function run(): Promise<ResponseType> {
+const developerContent =
+`You can only choose from [0, 1, 2].
+Please predict the least likely and most likely numbers to choose in next time, the two numbers cannot be the same.
+Separate them with spaces and output them, no specific analysis and thinking process is required.`;
+
+export async function run(historicalData: string): Promise<ResponseType> {
     const res = await fetch("https://api.atoma.network/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -36,11 +41,15 @@ export async function run(): Promise<ResponseType> {
         },
         body: JSON.stringify({
             model: process.env.ATOMA_MODEL,
-            messages: [{
-                role: "user",
-                content: "Please choose two different numbers in [0, 1, 2], and just reply me these two numbers."
-            }],
-            max_tokens: 128,
+            messages: [
+                {
+                    role: "developer",
+                    content: developerContent
+                },
+                {
+                    role: "user",
+                    content: historicalData
+                }],
         })
     });
     return res.json();
