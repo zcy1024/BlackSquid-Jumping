@@ -1,4 +1,4 @@
-import {createBetterTxFactory, networkConfig, suiClient} from "@/configs/networkConfig";
+import {createBetterTxFactory, networkConfig, suiClient, network} from "@/configs/networkConfig";
 import {NFTContextType, PoolContextType} from "@/contexts";
 import {SuiEvent} from "@mysten/sui/client";
 import {run} from "@/libs/atoma";
@@ -128,7 +128,7 @@ async function queryNFT(account: string, NFTType: string, cursor: string | null 
 export async function updateNFTInfo(account: string, nft: string | undefined): Promise<NFTContextType> {
     let NFT = nft;
     if (!NFT) {
-        const res = await queryNFT(account, `${networkConfig.testnet.variables.PackageID}::nft::BlackSquidJumpingNFT`, null);
+        const res = await queryNFT(account, `${networkConfig[network].variables.PackageID}::nft::BlackSquidJumpingNFT`, null);
         if (!res) {
             return {
                 nft: undefined,
@@ -166,13 +166,13 @@ export async function updateNFTInfo(account: string, nft: string | undefined): P
 export function handleEvent(event: SuiEvent | undefined): string {
     if (!event)
         return "";
-    if (event.type === `${networkConfig.testnet.variables.PackageID}::pool::DisburseBonusEvent`) {
+    if (event.type === `${networkConfig[network].variables.PackageID}::pool::DisburseBonusEvent`) {
         const award = Number((event.parsedJson as {
             bonus: string
         }).bonus) / 1000000000;
         return `Award: ${award}Sui`;
     }
-    if (event.type === `${networkConfig.testnet.variables.PackageID}::game::LoseEvent`) {
+    if (event.type === `${networkConfig[network].variables.PackageID}::game::LoseEvent`) {
         const award = Number((event.parsedJson as {
             amount: string
         }).amount) / 1000000000;
@@ -187,7 +187,7 @@ export async function delay(ms: number) {
 
 export async function queryPoolInfo(account: string): Promise<PoolContextType> {
     const pool = await suiClient.getObject({
-        id: networkConfig.testnet.variables.Pool,
+        id: networkConfig[network].variables.Pool,
         options: {
             showContent: true
         }
