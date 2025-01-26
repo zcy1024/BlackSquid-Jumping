@@ -114,6 +114,11 @@ export default function Home() {
                     blocks.map((_, i) => <div className="h-[126px] w-[126px] bg-[#0A0A0A] mb-[1px]" key={i}></div>)
                 }
             </div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-black text-[10rem] text-center opacity-30 font-medium italic">
+                <div className="animate-pulse">
+                    BlackSquid: Jumping
+                </div>
+            </div>
             {
                 opening &&
                 <div className="fixed top-0 left-0 w-full h-full z-10 bg-[#0A0A0A] opacity-80 animate-suiEasyOut">
