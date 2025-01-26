@@ -1,6 +1,7 @@
 import {createBetterTxFactory, networkConfig, suiClient} from "@/configs/networkConfig";
 import {NFTContextType, PoolContextType} from "@/contexts";
 import {SuiEvent} from "@mysten/sui/client";
+import {run} from "@/libs/atoma";
 
 export const startGameTx = createBetterTxFactory<{
     nft: string | undefined
@@ -45,6 +46,10 @@ export const nextPositionTx = createBetterTxFactory<{
     row: number,
     nft: string
 }>((tx, networkVariables, params) => {
+    run().then(res => {
+        console.log(res);
+        console.log(res.choices[0].message.content);
+    });
     tx.moveCall({
         package: networkVariables.PackageID,
         module: "game",
