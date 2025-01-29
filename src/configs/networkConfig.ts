@@ -8,11 +8,11 @@ const {networkConfig, useNetworkVariable, useNetworkVariables} = createNetworkCo
     testnet: {
         url: getFullnodeUrl("testnet"),
         variables: {
-            PackageID: "0x19f11be12cb1e2d7716a8fc2572d5c26dca0e7528e646ead7f0406a589b84e11",
-            UpgradeCap: "0x84df3af236a5c7f5d2def0636412df604d1ed6e5359578caed6383ea2a0412e7",
-            Publisher: "0x07e39f01163b37acb07216e74353ab54f829406d3f009ebed79b7b367f58d09d",
-            MintedVecSet: "0xbb4ac9bb358fe09db6ae26dfda949b92e51d618aec2a0427671060cd21cc166d",
-            Pool: "0xea69106f92f4b241557267d003d4b7de65fb82462e093ed562210069a37c66d5"
+            PackageID: "0x93ccecbea33631e915d3bdd852c35711b38119662c999a3fec646c2b3515a13b",
+            UpgradeCap: "0x7ad0819bdcf86841dea9f072c4d5e8b53e01b666d3092d21aaf152eac49e7de3",
+            Publisher: "0x5aef46633a5a9e2ec4e5d85899a385a825f8cbadf8a12ca10aaf5e114d070eff",
+            MintedVecSet: "0x102bdbfbce245721bc4c4f81633f4c2866b570213183ef4955a4253b1aac71fd",
+            Pool: "0x610f592becd24a1fa2303e69fa237b9158002f886a499d2446084f6f2939fc59"
         }
     }
 });

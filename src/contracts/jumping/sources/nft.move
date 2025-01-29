@@ -14,7 +14,8 @@ public struct BlackSquidJumpingNFT has key {
     list: u8,
     row: u8,
     playing: bool,
-    award: u64
+    award: u64,
+    history_data: vector<vector<u8>>
 }
 
 public struct MintedVecSet has key {
@@ -59,7 +60,8 @@ public fun mint(vec_set: &mut MintedVecSet, ctx: &mut TxContext): BlackSquidJump
         list: 0,
         row: 0,
         playing: false,
-        award: 0
+        award: 0,
+        history_data: vector<vector<u8>>[]
     }
 }
 
@@ -84,7 +86,8 @@ public fun burn(vec_set: &mut MintedVecSet, nft: BlackSquidJumpingNFT, ctx: &TxC
         list: _,
         row: _,
         playing: _,
-        award: _
+        award: _,
+        history_data: _
     } = nft;
     object::delete(id);
 }
@@ -94,6 +97,12 @@ public(package) fun update(nft: &mut BlackSquidJumpingNFT, list: u8, row: u8, pl
     nft.row = row;
     nft.playing = playing;
     nft.award = award;
+    if (list == 0) {
+        nft.history_data.push_back(vector<u8>[]);
+    } else {
+        let last_idx = nft.history_data.length() - 1;
+        nft.history_data[last_idx].push_back(row);
+    };
 }
 
 public fun is_playing(nft: &BlackSquidJumpingNFT): bool {
