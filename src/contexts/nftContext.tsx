@@ -9,7 +9,8 @@ export type NFTContextType = {
     list: number,
     row: number,
     playing: boolean,
-    award: number
+    award: number,
+    historyData: (string[])[]
 }
 
 export const NFTContext = createContext<[NFTContextType, () => Promise<void>]>([{
@@ -17,7 +18,8 @@ export const NFTContext = createContext<[NFTContextType, () => Promise<void>]>([
     list: 0,
     row: 0,
     playing: false,
-    award: 0
+    award: 0,
+    historyData: []
 }, async () => {}]);
 
 export default function NFTContextProvider({children}: {children: ReactNode}) {
@@ -27,7 +29,8 @@ export default function NFTContextProvider({children}: {children: ReactNode}) {
         list: 0,
         row: 0,
         playing: false,
-        award: 0
+        award: 0,
+        historyData: []
     });
     const queryAndStore = useCallback(async () => {
         setInfo(await updateNFTInfo(walletContext.walletAddress!, info.nft));

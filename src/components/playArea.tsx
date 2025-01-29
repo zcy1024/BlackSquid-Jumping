@@ -96,7 +96,8 @@ export default function PlayArea() {
         await handleNextPosition({
             list: list + 1,
             row: row,
-            nft: info.nft!
+            nft: info.nft!,
+            historyData: info.historyData
         }).beforeExecute(() => {
             setTips("Waiting...")
         }).onSuccess(async (res) => {

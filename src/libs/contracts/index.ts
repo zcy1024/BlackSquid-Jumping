@@ -41,20 +41,25 @@ export const startGameTx = createBetterTxFactory<{
     return tx;
 })
 
+function createData(data: (string[])[]): string {
+    let ret = "Each subsequent row represents a round of the game, and the numbers in each row represent the choices the player in turn makes during that round.";
+    data.map(game => {
+        let chosen = "";
+        game.map((turn, index) => chosen = chosen + (index === 0 ? "\n" : " ") + turn);
+        ret = ret + chosen;
+    });
+    ret = ret + `\nBased on the above data, please predict what the player will choose in the ${data.length} round of the game ${data[data.length - 1].length + 1} time.`;
+    return ret;
+}
+
 export const nextPositionTx = createBetterTxFactory<{
     list: number,
     row: number,
-    nft: string
+    nft: string,
+    historyData: (string[])[]
 }>((tx, networkVariables, params) => {
-    const data =
-`Each subsequent row represents a round of the game, and the numbers in each row represent the choices the player in turn makes during that round.
-0 1 2
-2 2 2 2 1 1
-0 0 2 1
-0 1 0
-1 1 1 1
-1 0 2 2 0
-2 0`;
+    const data = createData(params.historyData);
+    console.log(data);
     run(data).then(res => {
         console.log(res);
         console.log(res.choices[0].message.content);
@@ -144,7 +149,8 @@ export async function updateNFTInfo(account: string, nft: string | undefined): P
                 list: 0,
                 row: 0,
                 playing: false,
-                award: 0
+                award: 0,
+                historyData: []
             }
         }
         NFT = res.data?.objectId;
@@ -161,6 +167,7 @@ export async function updateNFTInfo(account: string, nft: string | undefined): P
             row: string,
             playing: boolean,
             award: string
+            history_data: (string[])[]
         }
     };
     return {
@@ -168,7 +175,8 @@ export async function updateNFTInfo(account: string, nft: string | undefined): P
         list: Number(temp.fields.list),
         row: Number(temp.fields.row),
         playing: temp.fields.playing,
-        award: Number(temp.fields.award) / 1000000000
+        award: Number(temp.fields.award) / 1000000000,
+        historyData: temp.fields.history_data,
     }
 }
 
