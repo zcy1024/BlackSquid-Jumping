@@ -10,6 +10,7 @@ use jumping::nft::BlackSquidJumpingNFT;
 
 const ENotPlaying: u64 = 0;
 const ENotCorrectPos: u64 = 1;
+const ENotCorrectAtoma: u64 = 2;
 
 public struct LoseEvent has copy, drop {
     amount: u64,
@@ -71,4 +72,23 @@ public fun end_game(nft: &mut BlackSquidJumpingNFT, pool: &mut Pool, ctx: &mut T
     let (list, row, award) = nft.get_info();
     nft.update(list, row, false, award);
     pool.disburse_bonus(award, ctx);
+}
+
+entry fun next_position2(list: u8, row: u8, down: u8, up: u8, nft: &mut BlackSquidJumpingNFT, pool: &mut Pool, ctx: &mut TxContext) {
+    assert!(nft.is_playing(), ENotPlaying);
+    assert!(list > 0 && list <= 6 && row >= 0 && row <= 2, ENotCorrectPos);
+    assert!(down >= 0 && down <= 2 && up >= 0 && up <= 2 && down != up, ENotCorrectAtoma);
+    if (row != up && row != down) {
+        peace_move(list, row, nft, pool, ctx);
+        return
+    };
+    if (row == up) {
+        up_move(list, row, nft, pool, ctx);
+        return
+    };
+    event::emit(LoseEvent {
+        amount: nft.get_award(),
+        user: ctx.sender()
+    });
+    nft.update(list, row, false, 0);
 }

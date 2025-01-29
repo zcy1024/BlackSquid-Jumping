@@ -41,7 +41,7 @@ export const startGameTx = createBetterTxFactory<{
     return tx;
 })
 
-function createData(data: (string[])[]): string {
+function createData(data: (string[])[]) {
     let ret = "Each subsequent row represents a round of the game, and the numbers in each row represent the choices the player in turn makes during that round.";
     data.map(game => {
         let chosen = "";
@@ -52,18 +52,25 @@ function createData(data: (string[])[]): string {
     return ret;
 }
 
+export async function handleHistoryData(historyData: (string[])[]) {
+    const data = createData(historyData);
+    console.log(data);
+    const res = await run(data);
+    console.log(res);
+    console.log(res.choices[0].message.content);
+    const atomaChosen = res.choices[0].message.content.split(' ');
+    const up = atomaChosen[0];
+    const down = atomaChosen[1];
+    if (down >= '0' && down <= '2' && up >= '0' && up <= '2' && down !== up)
+        return [Number(down), Number(up)];
+    return [-1, -1];
+}
+
 export const nextPositionTx = createBetterTxFactory<{
     list: number,
     row: number,
-    nft: string,
-    historyData: (string[])[]
+    nft: string
 }>((tx, networkVariables, params) => {
-    const data = createData(params.historyData);
-    console.log(data);
-    run(data).then(res => {
-        console.log(res);
-        console.log(res.choices[0].message.content);
-    });
     tx.moveCall({
         package: networkVariables.PackageID,
         module: "game",
@@ -72,6 +79,29 @@ export const nextPositionTx = createBetterTxFactory<{
             tx.pure.u8(params.list),
             tx.pure.u8(params.row),
             tx.object("0x8"),
+            tx.object(params.nft),
+            tx.object(networkVariables.Pool)
+        ]
+    });
+    return tx;
+})
+
+export const nextPosition2Tx = createBetterTxFactory<{
+    list: number,
+    row: number,
+    down: number,
+    up: number,
+    nft: string
+}>((tx, networkVariables, params) => {
+    tx.moveCall({
+        package: networkVariables.PackageID,
+        module: "game",
+        function: "next_position2",
+        arguments: [
+            tx.pure.u8(params.list),
+            tx.pure.u8(params.row),
+            tx.pure.u8(params.down),
+            tx.pure.u8(params.up),
             tx.object(params.nft),
             tx.object(networkVariables.Pool)
         ]

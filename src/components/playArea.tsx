@@ -3,7 +3,15 @@
 import {useContext, useEffect, useState} from "react";
 import {Player} from "@/components/index";
 import {useBetterSignAndExecuteTransaction} from "@/hooks";
-import {delay, endGameTx, handleEvent, nextPositionTx, startGameTx} from "@/libs/contracts";
+import {
+    delay,
+    endGameTx,
+    handleEvent,
+    handleHistoryData,
+    nextPosition2Tx,
+    nextPositionTx,
+    startGameTx
+} from "@/libs/contracts";
 import {NFTContext, PoolContext, TipContext, WalletContext} from "@/contexts";
 
 export default function PlayArea() {
@@ -92,27 +100,55 @@ export default function PlayArea() {
         tx: nextPositionTx,
         waitForTx: true
     });
+    const {handleSignAndExecuteTransaction: handleNextPosition2} = useBetterSignAndExecuteTransaction({
+        tx: nextPosition2Tx,
+        waitForTx: true
+    });
     const handleClick = async (list: number, row: number) => {
-        await handleNextPosition({
-            list: list + 1,
-            row: row,
-            nft: info.nft!,
-            historyData: info.historyData
-        }).beforeExecute(() => {
-            setTips("Waiting...")
-        }).onSuccess(async (res) => {
-            await updateInfo();
-            await updatePoolInfo();
-            const tips = handleEvent(res?.events?.[0]);
-            if (tips) {
-                setTips(tips);
-                await delay(3000);
-            }
-            setTips("");
-        }).onError((err) => {
-            console.log(err);
-            setTips("");
-        }).onExecute();
+        const [down, up] = await handleHistoryData(info.historyData);
+        if (down === -1) {
+            await handleNextPosition({
+                list: list + 1,
+                row: row,
+                nft: info.nft!
+            }).beforeExecute(() => {
+                setTips("Waiting...")
+            }).onSuccess(async (res) => {
+                await updateInfo();
+                await updatePoolInfo();
+                const tips = handleEvent(res?.events?.[0]);
+                if (tips) {
+                    setTips(tips);
+                    await delay(3000);
+                }
+                setTips("");
+            }).onError((err) => {
+                console.log(err);
+                setTips("");
+            }).onExecute();
+        } else {
+            await handleNextPosition2({
+                list: list + 1,
+                row: row,
+                down,
+                up,
+                nft: info.nft!
+            }).beforeExecute(() => {
+                setTips("Waiting...")
+            }).onSuccess(async (res) => {
+                await updateInfo();
+                await updatePoolInfo();
+                const tips = handleEvent(res?.events?.[0]);
+                if (tips) {
+                    setTips(tips);
+                    await delay(3000);
+                }
+                setTips("");
+            }).onError((err) => {
+                console.log(err);
+                setTips("");
+            }).onExecute();
+        }
     }
 
     return (
