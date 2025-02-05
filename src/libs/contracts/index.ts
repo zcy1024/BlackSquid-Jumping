@@ -54,10 +54,10 @@ function createData(data: (string[])[]) {
 
 export async function handleHistoryData(historyData: (string[])[]) {
     const data = createData(historyData);
-    console.log(data);
+    // console.log(data);
     const res = await run(data);
-    console.log(res);
-    console.log(res.choices[0].message.content);
+    // console.log(res);
+    // console.log(res.choices[0].message.content);
     const atomaChosen = res.choices[0].message.content.split(' ');
     const up = atomaChosen[0];
     const down = atomaChosen[1];
