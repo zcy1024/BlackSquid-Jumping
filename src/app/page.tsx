@@ -98,7 +98,10 @@ export default function Home() {
                 </div>
             </div>
             <div className="flex justify-between items-center h-16 px-64 bg-[#222]">
-                <Image src="/logo.jpeg" alt="HOH" width={60} height={60} className="opacity-60" priority={true}/>
+                <div className="flex gap-10 items-center">
+                    <Image src="/logo.jpeg" alt="HOH" width={60} height={60} className="opacity-60" priority={true}/>
+                    <audio controls autoPlay loop src="/YellowEyebrow.flac" className="opacity-0 z-10 animate-[easyIn_2s_ease-in_2s_forwards]" />
+                </div>
                 <div className="flex gap-10 items-center text-[#A0A0A0]">
                     <div>Pool: {poolInfo.total / 1000000000}Sui</div>
                     <DropdownMenu props={investItems}>
