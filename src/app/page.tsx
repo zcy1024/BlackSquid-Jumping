@@ -71,6 +71,8 @@ export default function Home() {
             {
                 label: "withdraw",
                 handleClick: async () => {
+                    if (poolInfo.invested_amount === 0)
+                        return;
                     await handleWithdraw({})
                         .beforeExecute(() => {
                             setTips("Waiting...");
