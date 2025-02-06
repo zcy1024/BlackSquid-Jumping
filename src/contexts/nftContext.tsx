@@ -32,9 +32,11 @@ export default function NFTContextProvider({children}: {children: ReactNode}) {
         award: 0,
         historyData: []
     });
+    const [oldAddress, setOldAddress] = useState<string>("");
     const queryAndStore = useCallback(async () => {
-        setInfo(await updateNFTInfo(walletContext.walletAddress!, info.nft));
-    }, [walletContext.walletAddress, info.nft]);
+        setInfo(await updateNFTInfo(walletContext.walletAddress!, walletContext.walletAddress! === oldAddress ? info.nft : undefined));
+        setOldAddress(walletContext.walletAddress!);
+    }, [walletContext.walletAddress, info.nft, oldAddress]);
     useEffect(() => {
         if (!walletContext.walletAddress)
             return;
