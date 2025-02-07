@@ -90,7 +90,7 @@ export default function Home() {
             }
         ]
         return ret;
-    }, [handleWithdraw, setTips, updatePoolInfo]);
+    }, [handleWithdraw, poolInfo.invested_amount, setTips, updatePoolInfo]);
 
     return (
         <div className="w-screen h-screen overflow-hidden select-none">
@@ -105,9 +105,9 @@ export default function Home() {
                     <audio controls autoPlay loop src="/YellowEyebrow.flac" className="opacity-0 z-10 animate-[easyIn_2s_ease-in_2s_forwards]" />
                 </div>
                 <div className="flex gap-10 items-center text-[#A0A0A0]">
-                    <div>Pool: {poolInfo.total / 1000000000}Sui</div>
+                    <div>Pool: {(poolInfo.total / 1000000000).toFixed(2)}Sui</div>
                     <DropdownMenu props={investItems}>
-                        Invest: {poolInfo.invested_amount / 1000000000}Sui
+                        Invest: {(poolInfo.invested_amount / 1000000000).toFixed(2)}Sui
                     </DropdownMenu>
                     <DropdownMenu props={menuItems}>
                         <CustomConnectButton/>
