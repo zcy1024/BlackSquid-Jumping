@@ -33,6 +33,7 @@ type ElizaType = {
     text: string
 }[]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function run_eliza(historicalData: string) {
     const res = await axios.post("https://3344-elizaos-eliza-0w4rsg6hhb5.ws-us117.gitpod.io/5d16ca26-9f97-0e17-b17e-b83f5dee6163/message", JSON.stringify({
         user: "user",
