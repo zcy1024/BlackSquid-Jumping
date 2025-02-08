@@ -49,6 +49,7 @@ function createData(data: (string[])[]) {
         ret = ret + chosen;
     });
     ret = ret + `\nBased on the above data, please predict what the player will choose in the ${data.length} round of the game ${data[data.length - 1].length + 1} time.`;
+    ret = ret + `\nPlayers can only choose from 0, 1, and 2, and so can you. Please predict the least likely and most likely numbers to choose in next time, the two numbers cannot be the same, separate them with spaces and output them.\nNo specific analysis and thinking process is required.`;
     return ret;
 }
 
