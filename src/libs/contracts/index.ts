@@ -59,9 +59,10 @@ export async function handleHistoryData(historyData: (string[])[]) {
     const res = await run(data);
     // console.log(res);
     // console.log(res.choices[0].message.content);
-    const atomaChosen = res.choices[0].message.content.split(' ');
-    const up = atomaChosen[0];
-    const down = atomaChosen[1];
+    // const up = atomaChosen[0];
+    // const down = atomaChosen[1];
+    const up = res[0];
+    const down = res[1];
     if (down >= '0' && down <= '2' && up >= '0' && up <= '2' && down !== up)
         return [Number(down), Number(up)];
     return [-1, -1];

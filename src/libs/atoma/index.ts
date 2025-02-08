@@ -26,14 +26,33 @@ type ResponseType = {
         message: {
             content: string
         }
-    }[]
+    }[],
+}
+
+type ElizaType = {
+    text: string
+}[]
+
+async function run_eliza(historicalData: string) {
+    const res = await axios.post("https://3344-elizaos-eliza-0w4rsg6hhb5.ws-us117.gitpod.io/5d16ca26-9f97-0e17-b17e-b83f5dee6163/message", JSON.stringify({
+        user: "user",
+        text: historicalData
+    }), {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        // timeout: 5000,
+        maxBodyLength: 50000,
+        maxContentLength: 50000
+    });
+    return (res.data as ElizaType)[0].text.split(' ');
 }
 
 const developerContent =
 `You can only choose from [0, 1, 2].
 Please predict the least likely and most likely numbers to choose in next time, the two numbers cannot be the same, separate them with spaces and output them, no specific analysis and thinking process is required.`;
 
-export async function run_axios(historicalData: string): Promise<ResponseType> {
+async function run_axios(historicalData: string) {
     const res = await axios.post("https://api.atoma.network/v1/chat/completions", JSON.stringify({
         model: process.env.ATOMA_MODEL,
         messages: [
@@ -54,21 +73,15 @@ export async function run_axios(historicalData: string): Promise<ResponseType> {
         maxBodyLength: 50000,
         maxContentLength: 50000
     });
-    return res.data;
+    return (res.data as ResponseType).choices[0].message.content.split(' ');
 }
 
-export async function run(historicalData: string): Promise<ResponseType>  {
+export async function run(historicalData: string)  {
     try {
         return await run_axios(historicalData);
     } catch (err) {
         console.log(err);
-        return {
-            choices: [{
-                message: {
-                    content: "6 6"
-                }
-            }]
-        }
+        return ['6', '6']
     }
     // const res = await fetch("https://api.atoma.network/v1/chat/completions", {
     //     method: "POST",
