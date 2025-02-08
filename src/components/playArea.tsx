@@ -105,14 +105,13 @@ export default function PlayArea() {
         waitForTx: true
     });
     const handleClick = async (list: number, row: number) => {
+        setTips("Waiting...");
         const [down, up] = await handleHistoryData(info.historyData);
         if (down === -1) {
             await handleNextPosition({
                 list: list + 1,
                 row: row,
                 nft: info.nft!
-            }).beforeExecute(() => {
-                setTips("Waiting...")
             }).onSuccess(async (res) => {
                 await updateInfo();
                 await updatePoolInfo();
@@ -133,8 +132,6 @@ export default function PlayArea() {
                 down,
                 up,
                 nft: info.nft!
-            }).beforeExecute(() => {
-                setTips("Waiting...")
             }).onSuccess(async (res) => {
                 await updateInfo();
                 await updatePoolInfo();
