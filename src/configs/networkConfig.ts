@@ -2,17 +2,17 @@ import {getFullnodeUrl, SuiClient} from "@mysten/sui/client";
 import {createNetworkConfig} from "@mysten/dapp-kit";
 import {Transaction} from "@mysten/sui/transactions";
 
-const network = "testnet";
+const network = "mainnet";
 
 const {networkConfig, useNetworkVariable, useNetworkVariables} = createNetworkConfig({
-    testnet: {
-        url: getFullnodeUrl("testnet"),
+    mainnet: {
+        url: getFullnodeUrl("mainnet"),
         variables: {
-            PackageID: "0x5607706d9e6f7f90b896c43c7e275e53f30d57c4bc5db9bac1bb3659acd63517",
-            UpgradeCap: "0xe2202e39196d28db06c4fea3120bbc141d61ba86cb28ec620ab77ee593dc2a94",
-            Publisher: "0x6c57845c3d2bd533573fce36e3858b44195b71bddb829082fd8ac1b647fb761e",
-            MintedVecSet: "0xd50662a62dd954904dfb6f134966783d5212c565c9911a31a08f47f3c3930170",
-            Pool: "0xb38ee85e36d2098c582a5e49012d4d6ba9122b74954178177e8a059d8dd248cf"
+            PackageID: "0xab28f392b8fbecdde704022ee526691c9f34c9a960ddc9cfe2f9326abcc30a12",
+            UpgradeCap: "0x40c42f82f33775cdef6e3915fc7d5e5ba929dd981e0a185f5ded2f43e9c119b1",
+            Publisher: "0xe1c461b301bee9d91ebe573dda964b9b734ec59c75295e441248378e9c274ad6",
+            MintedVecSet: "0x863aaa90119a45f3cf524863200db16bcd54a091bd9c8c383dad78b93bb84266",
+            Pool: "0xf105604d16fd80f10f37c97432e285457b508e7817b5f5d942c1f1ea606c89d7"
         }
     }
 });
