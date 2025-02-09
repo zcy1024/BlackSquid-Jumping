@@ -2,6 +2,8 @@ import {createBetterTxFactory, networkConfig, suiClient, network} from "@/config
 import {NFTContextType, PoolContextType} from "@/contexts";
 import {SuiEvent} from "@mysten/sui/client";
 import {run} from "@/libs/atoma";
+import {NAVX, swapPTB} from "navi-sdk";
+import {Transaction} from "@mysten/sui/transactions";
 
 export const startGameTx = createBetterTxFactory<{
     nft: string | undefined
@@ -141,6 +143,28 @@ export const investTx = createBetterTxFactory<{
     });
     return tx;
 })
+
+export async function investNAVITx(account: string, amount: number, coins: {
+    data: {
+        coinObjectId: string
+    }[]
+}) {
+    const tx = new Transaction();
+    const [coin] = coins.data.length > 1 ? tx.mergeCoins(coins.data[0].coinObjectId, coins.data.slice(1).map(coin => coin.coinObjectId)) : [tx.object(coins.data[0].coinObjectId)];
+    const coinIn = tx.splitCoins(coin, [amount]);
+    tx.transferObjects([coin], account);
+    const [sui] = await swapPTB(account, tx, NAVX.address, "0x2::sui::SUI", coinIn, amount, 0);
+    tx.moveCall({
+        package: networkConfig[network].variables.PackageID,
+        module: "pool",
+        function: "invest",
+        arguments: [
+            tx.object(networkConfig[network].variables.Pool),
+            sui
+        ]
+    });
+    return tx;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const investWithdrawTx = createBetterTxFactory((tx, networkVariables, _) => {

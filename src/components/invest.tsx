@@ -2,10 +2,20 @@
 
 import {ChangeEvent, Dispatch, SetStateAction, useCallback, useContext, useState} from "react";
 import {useBetterSignAndExecuteTransaction} from "@/hooks";
-import {delay, investTx} from "@/libs/contracts";
+import {delay, investNAVITx, investTx} from "@/libs/contracts";
 import {PoolContext, TipContext} from "@/contexts";
+import {getCoins, NAVX} from "navi-sdk";
+import {suiClient} from "@/configs/networkConfig";
+import {useSignAndExecuteTransaction} from "@mysten/dapp-kit";
 
-export default function Invest({closeInvestAction}: { closeInvestAction: Dispatch<SetStateAction<boolean>> }) {
+type PropsType = {
+    closeInvestAction: Dispatch<SetStateAction<boolean>>,
+    isNAVI: boolean,
+    setIsNAVIAction: Dispatch<SetStateAction<boolean>>,
+    account: string
+}
+
+export default function Invest({closeInvestAction, isNAVI, setIsNAVIAction, account}: PropsType) {
     const [balance, setBalance] = useState<string>("");
     const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const target = e.target.value;
@@ -19,8 +29,9 @@ export default function Invest({closeInvestAction}: { closeInvestAction: Dispatc
     const close = useCallback(async () => {
         setClosing(true);
         await delay(1000);
+        setIsNAVIAction(false);
         closeInvestAction(false);
-    }, [closeInvestAction]);
+    }, [closeInvestAction, setIsNAVIAction]);
 
     const [tips, setTips] = useContext(TipContext);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,19 +40,52 @@ export default function Invest({closeInvestAction}: { closeInvestAction: Dispatc
         tx: investTx,
         waitForTx: true
     });
+    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction();
     const handleClick = async () => {
-        await handleInvest({
-            amount: Number(balance)
-        }).beforeExecute(() => {
+        if (!isNAVI) {
+            await handleInvest({
+                amount: Number(balance)
+            }).beforeExecute(() => {
+                setTips("Waiting...");
+            }).onSuccess(async () => {
+                await updatePoolInfo();
+                await close();
+                setTips("");
+            }).onError((err) => {
+                console.log(err);
+                setTips("");
+            }).onExecute();
+        } else {
             setTips("Waiting...");
-        }).onSuccess(async () => {
-            await updatePoolInfo();
-            await close();
-            setTips("");
-        }).onError((err) => {
-            console.log(err);
-            setTips("");
-        }).onExecute();
+            const coins: {
+                data: {
+                    coinObjectId: string
+                }[]
+            } = await getCoins(suiClient, account, NAVX.address);
+            if (coins.data.length === 0) {
+                setTips("Please check NAVX");
+                await delay(3000);
+                setTips("");
+                return;
+            }
+            const tx = await investNAVITx(account, Number(balance), coins);
+            signAndExecuteTransaction({
+                transaction: tx
+            }, {
+                onSuccess: async (result) => {
+                    await suiClient.waitForTransaction({
+                        digest: result.digest
+                    });
+                    await updatePoolInfo();
+                    await close();
+                    setTips("");
+                },
+                onError: (err) => {
+                    console.log(err);
+                    setTips("");
+                }
+            });
+        }
     }
     return (
         <div className={"absolute top-0 left-0 w-full h-full opacity-60 overflow-hidden " + (tips ? "" : "z-50")}>

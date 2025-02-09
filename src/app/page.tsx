@@ -57,6 +57,7 @@ export default function Home() {
 
     const [tips, setTips] = useContext(TipContext);
     const [tryToInvest, setTryToInvest] = useState<boolean>(false);
+    const [isNAVI, setIsNAVI] = useState<boolean>(false);
     const {handleSignAndExecuteTransaction: handleWithdraw} = useBetterSignAndExecuteTransaction({
         tx: investWithdrawTx,
         waitForTx: true
@@ -67,6 +68,13 @@ export default function Home() {
             {
                 label: "invest",
                 handleClick: () => setTryToInvest(true)
+            },
+            {
+                label: "invest(NAVI)",
+                handleClick: () => {
+                    setIsNAVI(true)
+                    setTryToInvest(true)
+                }
             },
             {
                 label: "withdraw",
@@ -137,7 +145,7 @@ export default function Home() {
                 <PlayArea />
             </div>
             <Tips tips={tips} />
-            {tryToInvest && <Invest closeInvestAction={setTryToInvest} />}
+            {tryToInvest && <Invest closeInvestAction={setTryToInvest} isNAVI={isNAVI} setIsNAVIAction={setIsNAVI} account={walletContext.walletAddress!} />}
         </div>
     );
 }
