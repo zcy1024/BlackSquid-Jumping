@@ -4,7 +4,7 @@
 
 A game inspired by 오징어게임(Squid Game).
 
-Developed based on Sui, Next.js, Atoma...
+Developed based on Sui, Next.js, ElizaOS, Atoma, NAVI, Bluefin...
 
 ## How to play
 
