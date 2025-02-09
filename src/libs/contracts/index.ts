@@ -1,9 +1,10 @@
-import {createBetterTxFactory, networkConfig, suiClient, network} from "@/configs/networkConfig";
+import {createBetterTxFactory, network, networkConfig, suiClient} from "@/configs/networkConfig";
 import {NFTContextType, PoolContextType} from "@/contexts";
 import {SuiEvent} from "@mysten/sui/client";
 import {run} from "@/libs/atoma";
-import {NAVX, swapPTB} from "navi-sdk";
+import {buildSwapPTBFromQuote, NAVX} from "navi-sdk";
 import {Transaction} from "@mysten/sui/transactions";
+import {getQuote} from "@/libs/navi"
 
 export const startGameTx = createBetterTxFactory<{
     nft: string | undefined
@@ -150,10 +151,12 @@ export async function investNAVITx(account: string, amount: number, coins: {
     }[]
 }) {
     const tx = new Transaction();
-    const [coin] = coins.data.length > 1 ? tx.mergeCoins(coins.data[0].coinObjectId, coins.data.slice(1).map(coin => coin.coinObjectId)) : [tx.object(coins.data[0].coinObjectId)];
+    tx.mergeCoins(coins.data[0].coinObjectId, coins.data.slice(1).map(coin => coin.coinObjectId));
+    const coin = tx.object(coins.data[0].coinObjectId);
     const coinIn = tx.splitCoins(coin, [amount]);
     tx.transferObjects([coin], account);
-    const [sui] = await swapPTB(account, tx, NAVX.address, "0x2::sui::SUI", coinIn, amount, 0);
+    const quote = await getQuote(NAVX.address, "0x2::sui::SUI", amount);
+    const [sui] = await buildSwapPTBFromQuote(account, tx, 0, coinIn, quote);
     tx.moveCall({
         package: networkConfig[network].variables.PackageID,
         module: "pool",
